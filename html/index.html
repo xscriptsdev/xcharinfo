@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X Character Informations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="config.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+<style>
+   
+    body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    position: fixed;
+    right: 32px;
+    top: 32px;
+    display: flex;
+    justify-content: flex-end;
+    
+}
+
+.id-text {
+        color: #D1D5DB;
+        margin-left: 8px;
+        font-size: 0.9em;
+    }
+
+.panel {
+    opacity: 0;
+    transform: translateX(100%);
+    display: none; 
+    width: 320px;
+    background: linear-gradient(135deg, 
+    var(--primary-color), 
+    var(--secondary-color), 
+    var(--accent-color));
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    border: var(--border-width) solid var(--border-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.panel:hover {
+    border-color: #2c233d83;
+    transform: scale(1.02);
+    box-shadow: 0 0 20px #2c233d;
+}
+
+.info-item:hover {
+    transform: translateX(8px);
+}
+
+.info-item:hover i {
+    animation: iconPulse 0.6s ease;
+}
+
+.info-item:hover span {
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes iconPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+
+.info-item i {
+    transition: color 0.3s ease;
+}
+
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+.header h2 {
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+    margin: 0;
+}
+
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9CA3AF;
+    transition: color 0.3s ease;
+}
+
+button:hover {
+    color: white;
+}
+
+.content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.subtitle {
+    color: #9CA3AF;
+    font-size: 14px;
+}
+
+.info-item {
+    transition: transform 0.2s ease, color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+}
+
+.info-item.small {
+    font-size: 14px;
+    color: #D1D5DB;
+}
+
+.info-item:hover .user-icon {
+    color: #42a5f5 !important;
+}
+
+.info-item:hover .wallet-icon {
+    color: #4dd0e1 !important;
+}
+
+.info-item:hover .dollar-icon {
+    color: #66bb6a !important;
+}
+
+.info-item:hover .briefcase-icon {
+    color: #42a5f5 !important;
+}
+.info-item i {
+    width: 18px;
+    height: 18px;
+}
+
+.info-item i[data-lucide="dollar-sign"] {
+    color: #4ADE80;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in {
+    animation: slideIn 0.3s ease-out forwards;
+}
+
+.panel {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.panel.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel" id="infoPanel">
+            <div class="header">
+                <h2>Character Information</h2>
+                <button id="closeBtn">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="content">
+                <div class="section">
+                    <div class="subtitle">First & last name</div>
+                    <div class="info-item" id="character-name">
+                        <i data-lucide="user" class="user-icon"></i>
+                        <span><span id="name-text">Loading...</span> <span class="id-text">| <span id="server-id">000</span></span></span>
+                    </div>
+                </div>
+            
+                <div class="section">
+                    <div class="subtitle">Money</div>
+                    <div class="info-item">
+                        <i data-lucide="wallet" class="wallet-icon"></i>
+                        <span id="cash-amount">$0</span>
+                    </div>
+                    <div class="info-item">
+                        <i data-lucide="dollar-sign" class="dollar-icon"></i>
+                        <span id="bank-amount">$0</span>
+                    </div>
+                </div>
+            
+                <div class="section">
+                    <div class="subtitle">Job</div>
+                    <div class="info-item">
+                        <i data-lucide="briefcase" class="briefcase-icon"></i>
+                        <span id="job-info">Unemployed</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+  document.addEventListener('DOMContentLoaded', () => {
+        const config = window.UIConfig.Config;
+
+        const panel = document.querySelector('.panel');
+        const closeBtn = document.getElementById('closeBtn');
+        
+   
+        document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && panel.style.display === 'block') {
+        fetch(`https://${GetParentResourceName()}/hideUI`, { method: 'POST' });
+        panel.classList.remove('visible');
+        setTimeout(() => panel.style.display = 'none', 300);
+    }
+});
+     
+        
+        document.documentElement.style.setProperty('--primary-color', config.style.colors.primary);
+        document.documentElement.style.setProperty('--secondary-color', config.style.colors.secondary);
+        document.documentElement.style.setProperty('--accent-color', config.style.colors.accent);
+        document.documentElement.style.setProperty('--text-primary', config.style.colors.textPrimary);
+        document.documentElement.style.setProperty('--text-secondary', config.style.colors.textSecondary);
+        document.documentElement.style.setProperty('--border-radius', config.style.borderRadius);
+        document.documentElement.style.setProperty('--border-width', config.style.borderWidth);
+        document.documentElement.style.setProperty('--border-color', config.style.borderColor);
+
+        document.querySelectorAll('[data-lucide="user"]').forEach(icon => {
+            icon.style.color = config.style.colors.icons.user;
+        });
+        document.querySelectorAll('[data-lucide="wallet"]').forEach(icon => {
+            icon.style.color = config.style.colors.icons.wallet;
+        });
+        document.querySelectorAll('[data-lucide="dollar-sign"]').forEach(icon => {
+            icon.style.color = config.style.colors.icons.bank;
+        });
+        document.querySelectorAll('[data-lucide="briefcase"]').forEach(icon => {
+            icon.style.color = config.style.colors.icons.job;
+        });
+
+    lucide.createIcons();
+    window.addEventListener('message', (event) => {
+    
+    if (event.data.action === 'showUI') {
+        panel.style.display = 'block';
+        setTimeout(() => {
+            panel.classList.add('visible');
+            fetch(`https://${GetParentResourceName()}/requestUpdate`, { method: 'POST' });
+        }, 50);
+    }
+    else if (event.data.action === 'hideUI') {
+        panel.classList.remove('visible');
+        setTimeout(() => panel.style.display = 'none', 300);
+    }
+
+    if (event.data.action === 'updateData') {
+        const updateFields = () => {
+            const d = event.data.data;
+            document.getElementById('name-text').textContent = d.name;
+            document.getElementById('server-id').textContent = d.id;
+            document.getElementById('cash-amount').textContent = d.cash;
+            document.getElementById('bank-amount').textContent = d.bank;
+            document.getElementById('job-info').textContent = d.job;
+        };
+
+        if (panel.style.display === 'block') {
+            requestAnimationFrame(updateFields);
+        } else {
+            updateFields();
+        }
+        
+        lucide.createIcons();
+    }
+});
+
+    closeBtn.addEventListener('click', () => {
+        fetch(`https://${GetParentResourceName()}/hideUI`, {
+            method: 'POST'
+        }).catch(e => console.error('', e));
+        
+        panel.classList.remove('visible');
+        setTimeout(() => {
+            panel.style.display = 'none';
+        }, 300);
+    });
+});
+
+</script>
+</body>
+</html>

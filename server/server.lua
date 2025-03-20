@@ -18,23 +18,17 @@ AddEventHandler('xscripts:charinfo:requestData', function()
 
         TriggerClientEvent('xscripts:charinfo:receiveData', src, cachedData)
     else
-        MySQL.query('SELECT firstname, lastname FROM users WHERE identifier = ?', {xPlayer.identifier}, function(result)
-            if not result or #result == 0 then
-                return
-            end
+        local userData = {
+            serverId = src,
+            firstname = xPlayer.get('firstName') or 'Unknown',
+            lastname = xPlayer.get('lastName') or 'Unknown',
+            cash = xPlayer.getMoney(),
+            bank = xPlayer.getAccount('bank') and xPlayer.getAccount('bank').money or 0,
+            job = xPlayer.job and xPlayer.job.label or 'Unemployed',
+            grade = xPlayer.job and xPlayer.job.grade_label or ''
+        }
 
-            local userData = {
-                serverId = src,
-                firstname = result[1].firstname or 'Unknown',
-                lastname = result[1].lastname or 'Unknown',
-                cash = xPlayer.getMoney(),
-                bank = xPlayer.getAccount('bank') and xPlayer.getAccount('bank').money or 0,
-                job = xPlayer.job and xPlayer.job.label or 'Unemployed',
-                grade = xPlayer.job and xPlayer.job.grade_label or ''
-            }
-
-            cachedUserData[xPlayer.identifier] = userData
-            TriggerClientEvent('xscripts:charinfo:receiveData', src, userData)
-        end)
+        cachedUserData[xPlayer.identifier] = userData
+        TriggerClientEvent('xscripts:charinfo:receiveData', src, userData)
     end
 end)
